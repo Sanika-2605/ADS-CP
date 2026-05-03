@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance & Portfolio Manager — Interactive Demo</title>
+  <meta name="description" content="Interactive demo of a C-based Personal Finance Manager showcasing Trie, Segment Tree, Red-Black Tree, Heap, and DP data structures.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<nav class="nav" id="main-nav">
+  <div class="nav-logo">💰 FinanceDS</div>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#transactions">Transactions</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#bills">Bills</a></li>
+    <li><a href="#tax">Tax</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+  </ul>
+  <div class="nav-hamburger" id="nav-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="hero-content reveal">
+    <div class="hero-badge"><span class="dot"></span> Built with Advanced Data Structures in C</div>
+    <h1>Personal Finance &<br><span class="gradient-text">Portfolio Manager</span></h1>
+    <p>A modular CLI application powered by Tries, Segment Trees, Red-Black Trees, Heaps, and Dynamic Programming — all implemented from scratch.</p>
+    <div class="hero-cta">
+      <a href="#transactions" class="btn btn-primary">🚀 Explore Demos</a>
+      <a href="#overview" class="btn btn-secondary">📖 Learn More</a>
+    </div>
+  </div>
+  <div class="scroll-indicator"><span>Scroll</span><div class="arrow"></div></div>
+</section>
+
+<!-- ========== OVERVIEW ========== -->
+<section id="overview">
+  <div class="section-container">
+    <div class="section-header reveal">
+      <div class="section-label">Modules</div>
+      <h2 class="section-title">Four Powerful Modules</h2>
+      <p class="section-desc">Each module is backed by carefully chosen data structures for optimal performance.</p>
+    </div>
+    <div class="overview-grid">
+      <div class="overview-card reveal" style="--card-accent: linear-gradient(90deg,#10b981,#06b6d4)">
+        <div class="card-icon">📊</div>
+        <h3>Transactions</h3>
+        <p>Auto-categorize vendors and run range sum queries on daily expenses.</p>
+        <div class="ds-tags"><span class="ds-tag">Trie</span><span class="ds-tag">Segment Tree</span></div>
+      </div>
+      <div class="overview-card reveal" style="--card-accent: linear-gradient(90deg,#3b82f6,#06b6d4)">
+        <div class="card-icon portfolio">📈</div>
+        <h3>Portfolio</h3>
+        <p>Manage stock holdings with balanced search and find top gainers instantly.</p>
+        <div class="ds-tags"><span class="ds-tag">Red-Black Tree</span><span class="ds-tag">Max Heap</span></div>
+      </div>
+      <div class="overview-card reveal" style="--card-accent: linear-gradient(90deg,#f59e0b,#ef4444)">
+        <div class="card-icon bills">🧾</div>
+        <h3>Bills</h3>
+        <p>Priority queue ensures the most urgent bill is always paid first.</p>
+        <div class="ds-tags"><span class="ds-tag">Min Heap</span></div>
+      </div>
+      <div class="overview-card reveal" style="--card-accent: linear-gradient(90deg,#8b5cf6,#ec4899)">
+        <div class="card-icon tax">🏛️</div>
+        <h3>Tax Calculator</h3>
+        <p>Slab-based tax computation with memoized results for fast recalculation.</p>
+        <div class="ds-tags"><span class="ds-tag">DP + Memoization</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TRANSACTIONS DEMO ========== -->
+<section id="transactions" class="demo-section">
+  <div class="section-container">
+    <div class="section-header reveal">
+      <div class="section-label">Module 1</div>
+      <h2 class="section-title">Transactions — Trie & Segment Tree</h2>
+      <p class="section-desc">Auto-categorize vendors via Trie traversal and query expense ranges with the Segment Tree.</p>
+    </div>
+    <div class="demo-layout reveal">
+      <div class="demo-panel">
+        <h3><span class="icon">📊</span> Add Transaction</h3>
+        <div class="form-group">
+          <label for="txn-vendor">Vendor</label>
+          <input type="text" id="txn-vendor" placeholder="e.g. Amazon, Zomato">
+        </div>
+        <div class="form-group">
+          <label for="txn-category">Category (empty = auto)</label>
+          <input type="text" id="txn-category" placeholder="Auto-detect via Trie">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="txn-amount">Amount (₹)</label>
+            <input type="number" id="txn-amount" placeholder="500">
+          </div>
+          <div class="form-group">
+            <label for="txn-day">Day (1-366)</label>
+            <input type="number" id="txn-day" placeholder="42" min="1" max="366">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" id="txn-add-btn">+ Add Transaction</button>
+
+        <h3 style="margin-top:28px"><span class="icon">🔍</span> Range Sum Query</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="txn-range-start">Start Day</label>
+            <input type="number" id="txn-range-start" placeholder="1" min="1" max="366">
+          </div>
+          <div class="form-group">
+            <label for="txn-range-end">End Day</label>
+            <input type="number" id="txn-range-end" placeholder="60" min="1" max="366">
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-full" id="txn-query-btn">⚡ Query Range Sum</button>
+
+        <div class="data-table-wrap" id="txn-table-wrap" style="display:none">
+          <table class="data-table">
+            <thead><tr><th>Vendor</th><th>Category</th><th>₹</th><th>Day</th></tr></thead>
+            <tbody id="txn-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="viz-area">
+        <div class="viz-header">
+          <div class="viz-tabs">
+            <button class="viz-tab active" data-viz="trie" data-module="txn">Trie</button>
+            <button class="viz-tab" data-viz="segtree" data-module="txn">Segment Tree</button>
+          </div>
+        </div>
+        <div class="viz-canvas-wrap">
+          <canvas id="txn-canvas" width="700" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="console-output reveal">
+      <div class="console-header"><div class="console-dots"><span></span><span></span><span></span></div> terminal output</div>
+      <div class="console-body" id="txn-console">$ Waiting for input...\n</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PORTFOLIO DEMO ========== -->
+<section id="portfolio" class="demo-section">
+  <div class="section-container">
+    <div class="section-header reveal">
+      <div class="section-label">Module 2</div>
+      <h2 class="section-title">Portfolio — Red-Black Tree & Max Heap</h2>
+      <p class="section-desc">Balanced BST for O(log n) stock lookups, and a Max Heap to surface top gainers.</p>
+    </div>
+    <div class="demo-layout reveal">
+      <div class="demo-panel">
+        <h3><span class="icon">📈</span> Add / Update Holding</h3>
+        <div class="form-group">
+          <label for="pf-symbol">Stock Symbol</label>
+          <input type="text" id="pf-symbol" placeholder="e.g. AAPL">
+        </div>
+        <div class="form-group">
+          <label for="pf-qty">Quantity</label>
+          <input type="number" id="pf-qty" placeholder="10">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pf-buy">Buy Price</label>
+            <input type="number" id="pf-buy" placeholder="150">
+          </div>
+          <div class="form-group">
+            <label for="pf-current">Current Price</label>
+            <input type="number" id="pf-current" placeholder="170">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary btn-full" id="pf-add-btn">+ Add Holding</button>
+        </div>
+        <div class="btn-group" style="margin-top:12px">
+          <button class="btn btn-secondary btn-sm" id="pf-top-btn">🏆 Top Gainer</button>
+          <button class="btn btn-secondary btn-sm" id="pf-preload-btn">📦 Load Sample</button>
+        </div>
+        <div class="data-table-wrap" id="pf-table-wrap" style="display:none">
+          <table class="data-table">
+            <thead><tr><th>Symbol</th><th>Qty</th><th>Buy</th><th>Current</th><th>Gain%</th></tr></thead>
+            <tbody id="pf-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="viz-area">
+        <div class="viz-header">
+          <div class="viz-tabs">
+            <button class="viz-tab active" data-viz="rbtree" data-module="pf">Red-Black Tree</button>
+            <button class="viz-tab" data-viz="maxheap" data-module="pf">Max Heap</button>
+          </div>
+        </div>
+        <div class="viz-canvas-wrap">
+          <canvas id="pf-canvas" width="700" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="console-output reveal">
+      <div class="console-header"><div class="console-dots"><span></span><span></span><span></span></div> terminal output</div>
+      <div class="console-body" id="pf-console">$ Waiting for input...\n</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== BILLS DEMO ========== -->
+<section id="bills" class="demo-section">
+  <div class="section-container">
+    <div class="section-header reveal">
+      <div class="section-label">Module 3</div>
+      <h2 class="section-title">Bills — Min Heap Priority Queue</h2>
+      <p class="section-desc">Earliest due bill is always at the top. Add, view, and pay bills in priority order.</p>
+    </div>
+    <div class="demo-layout reveal">
+      <div class="demo-panel">
+        <h3><span class="icon">🧾</span> Add Bill</h3>
+        <div class="form-group">
+          <label for="bill-name">Bill Name</label>
+          <input type="text" id="bill-name" placeholder="e.g. Electricity">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bill-amount">Amount (₹)</label>
+            <input type="number" id="bill-amount" placeholder="1500">
+          </div>
+          <div class="form-group">
+            <label for="bill-date">Due Date</label>
+            <input type="date" id="bill-date">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary btn-full" id="bill-add-btn">+ Add Bill</button>
+        </div>
+        <div class="btn-group" style="margin-top:12px">
+          <button class="btn btn-secondary btn-sm" id="bill-pay-btn">💳 Pay Next Due</button>
+          <button class="btn btn-secondary btn-sm" id="bill-preload-btn">📦 Load Sample</button>
+        </div>
+        <div class="data-table-wrap" id="bill-table-wrap" style="display:none">
+          <table class="data-table">
+            <thead><tr><th>Bill</th><th>Amount</th><th>Due Date</th></tr></thead>
+            <tbody id="bill-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="viz-area">
+        <div class="viz-header">
+          <div class="viz-tabs">
+            <button class="viz-tab active" data-viz="heaptree" data-module="bill">Tree View</button>
+            <button class="viz-tab" data-viz="heaparray" data-module="bill">Array View</button>
+          </div>
+        </div>
+        <div class="viz-canvas-wrap">
+          <canvas id="bill-canvas" width="700" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="console-output reveal">
+      <div class="console-header"><div class="console-dots"><span></span><span></span><span></span></div> terminal output</div>
+      <div class="console-body" id="bill-console">$ Waiting for input...\n</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TAX DEMO ========== -->
+<section id="tax" class="demo-section">
+  <div class="section-container">
+    <div class="section-header reveal">
+      <div class="section-label">Module 4</div>
+      <h2 class="section-title">Tax Calculator — DP with Memoization</h2>
+      <p class="section-desc">Slab-based tax with memoized results. Watch cache hits and misses in real time.</p>
+    </div>
+    <div class="demo-layout reveal">
+      <div class="demo-panel">
+        <h3><span class="icon">🏛️</span> Calculate Tax</h3>
+        <div class="form-group">
+          <label for="tax-income">Annual Income (₹)</label>
+          <input type="number" id="tax-income" placeholder="e.g. 800000">
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary btn-full" id="tax-calc-btn">🧮 Calculate Tax</button>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="tax-clear-btn" style="margin-top:12px">🗑️ Clear Cache</button>
+
+        <h3 style="margin-top:28px"><span class="icon">📋</span> Tax Slabs</h3>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Up To (₹)</th><th>Rate</th></tr></thead>
+            <tbody>
+              <tr><td>2,50,000</td><td>0%</td></tr>
+              <tr><td>5,00,000</td><td>5%</td></tr>
+              <tr><td>10,00,000</td><td>20%</td></tr>
+              <tr><td>Above</td><td>30%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="viz-area">
+        <div class="viz-header">
+          <div class="viz-tabs">
+            <button class="viz-tab active" data-viz="taxbar" data-module="tax">Slab Breakdown</button>
+            <button class="viz-tab" data-viz="taxmemo" data-module="tax">Memo Cache</button>
+          </div>
+        </div>
+        <div class="viz-canvas-wrap" id="tax-viz-area">
+          <canvas id="tax-canvas" width="700" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="console-output reveal">
+      <div class="console-header"><div class="console-dots"><span></span><span></span><span></span></div> terminal output</div>
+      <div class="console-body" id="tax-console">$ Waiting for input...\n</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ARCHITECTURE ========== -->
+<section id="architecture">
+  <div class="section-container">
+    <div class="section-header reveal">
+      <div class="section-label">Architecture</div>
+      <h2 class="section-title">Project Structure</h2>
+      <p class="section-desc">Modular C codebase with clean separation of data structures and business logic.</p>
+    </div>
+    <div class="arch-grid reveal">
+      <div class="arch-diagram">
+        <canvas id="arch-canvas" width="500" height="380"></canvas>
+      </div>
+      <div class="arch-info">
+        <div class="arch-item">
+          <div class="arch-item-icon" style="background:rgba(16,185,129,0.1);color:var(--primary)">📊</div>
+          <div><h4>transaction.c / .h</h4><p>Trie for vendor→category mapping, Segment Tree for daily expense range queries.</p></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-item-icon" style="background:rgba(59,130,246,0.1);color:var(--blue)">📈</div>
+          <div><h4>portfolio.c / .h</h4><p>Red-Black Tree for balanced stock storage, Max Heap for top gainer extraction.</p></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-item-icon" style="background:rgba(245,158,11,0.1);color:var(--amber)">🧾</div>
+          <div><h4>bills.c / .h</h4><p>Min Heap priority queue — earliest due bill always at root.</p></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-item-icon" style="background:rgba(139,92,246,0.1);color:var(--violet)">🏛️</div>
+          <div><h4>tax.c / .h</h4><p>Bracketed slab calculation with DP memoization by income buckets.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <p>Personal Finance & Portfolio Manager — ADS Course Project · Built with ❤️ in C99</p>
+</footer>
+
+<!-- ========== SCRIPTS ========== -->
+<script src="app.js"></script>
+<script src="modules/transaction.js"></script>
+<script src="modules/portfolio.js"></script>
+<script src="modules/bills.js"></script>
+<script src="modules/tax.js"></script>
+
+</body>
+</html>
