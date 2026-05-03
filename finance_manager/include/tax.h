@@ -1,37 +1,26 @@
 #ifndef TAX_H
 #define TAX_H
 
-#define DEDUCTION_NAME_LEN 50
-#define SCENARIO_NAME_LEN 50
-#define MAX_TAX_SCENARIOS 20
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct Deduction {
-    char name[DEDUCTION_NAME_LEN];
-    double amount;
-    struct Deduction *next;
-} Deduction;
-
-typedef struct TaxScenario {
-    int id;
-    char name[SCENARIO_NAME_LEN];
-    double income;
-    Deduction *deductions;
-} TaxScenario;
+#define MAX_SLABS 10
+#define MEMO_SIZE 1000 // Cache for income levels (in units of thousands)
 
 typedef struct {
-    TaxScenario *scenarios[MAX_TAX_SCENARIOS];
-    int count;
-    int nextId;
-} TaxManager;
+    double limit;
+    double rate;
+} TaxSlab;
 
-void initTaxManager(TaxManager *manager);
-TaxScenario *createScenario(TaxManager *manager, const char *name, double income);
-TaxScenario *cloneScenario(TaxManager *manager, int sourceScenarioId, const char *newName);
-int addDeduction(TaxManager *manager, int scenarioId, const char *deductionName, double amount);
-double totalDeductions(const TaxScenario *scenario);
-double calculateTax(const TaxScenario *scenario);
-void compareScenarios(TaxManager *manager, int scenarioAId, int scenarioBId);
-void listScenarios(const TaxManager *manager);
-void freeTaxManager(TaxManager *manager);
+typedef struct {
+    TaxSlab slabs[MAX_SLABS];
+    int slabCount;
+    double memo[MEMO_SIZE];
+} TaxCalculator;
+
+void initTaxCalculator(TaxCalculator *tc);
+void addTaxSlab(TaxCalculator *tc, double limit, double rate);
+double calculateTaxDP(TaxCalculator *tc, double income);
+void clearMemo(TaxCalculator *tc);
 
 #endif

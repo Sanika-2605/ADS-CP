@@ -1,200 +1,183 @@
-# ADS-CP
+# Personal Finance & Portfolio Manager
 
-Personal Finance & Investment Portfolio Manager built in C.
+A modular CLI-based Personal Finance & Investment Portfolio Manager written in pure **C (C99)**, built entirely with custom-implemented data structures — no external libraries beyond `stdio.h`, `stdlib.h`, and `string.h`.
+
+---
 
 ## Overview
 
-This project is a menu-driven CLI application that helps you track personal finances and simulate tax outcomes. It uses multiple data structures to support different modules efficiently.
+This is a menu-driven terminal application that helps you manage personal finances, track investments, schedule bills, and plan taxes — all powered by core data structures implemented from scratch.
 
-## Features
-
-- **Transaction tracking** with vendor and category support
-- **Auto-category hints** for known vendors using a Trie
-- **Expense range queries** (day-based) using a Segment Tree
-- **Portfolio management** (insert/update holdings, total value) using AVL Tree
-- **Bill scheduling** and payment priority using Min Heap
-- **Tax scenario planning** with cloning and deduction comparison
+---
 
 ## Data Structures Used
 
-- **Trie**: vendor/category lookup
-- **AVL Tree**: balanced stock holdings portfolio
-- **Min Heap**: next due bill retrieval
-- **Segment Tree**: expense total over date ranges
-- **Array-backed manager structures**: transactions and tax scenarios
+| Module | Data Structure | Purpose |
+|---|---|---|
+| `transaction` | **Trie** | Vendor-to-category auto-matching |
+| `transaction` | **Segment Tree** | Range sum queries on daily expenses |
+| `portfolio` | **Red-Black Tree** | Balanced storage of stock holdings |
+| `portfolio` | **Max Heap** | Tracking top gainers by % gain |
+| `bills` | **Min Heap** | Priority queue for upcoming bills |
+| `tax` | **DP + Memoization** | Efficient multi-slab tax calculation |
+
+---
+
+## Project Structure
+
+```
+ADS-CP/
+└── finance_manager/
+    ├── Makefile
+    ├── include/
+    │   ├── transaction.h   ← Trie + Segment Tree definitions
+    │   ├── portfolio.h     ← Red-Black Tree + Max Heap definitions
+    │   ├── bills.h         ← Min Heap (Bill Priority Queue)
+    │   └── tax.h           ← DP Tax Calculator
+    └── src/
+        ├── main.c          ← Menu-driven integration
+        ├── transaction.c   ← Trie + Segment Tree implementation
+        ├── portfolio.c     ← RBT + Heap implementation
+        ├── bills.c         ← Min Heap implementation
+        └── tax.c           ← DP with memoization
+```
+
+---
 
 ## Build & Run
 
-### Option 1: Using Make
+### Option 1: Direct GCC (Recommended)
 
-From the `finance_manager` folder:
+Navigate to the `finance_manager` folder:
+
+```bash
+gcc -Wall -Iinclude src/main.c src/transaction.c src/portfolio.c src/bills.c src/tax.c -o finance_manager
+./finance_manager
+```
+
+On **Windows (PowerShell)**:
+
+```powershell
+gcc -Wall -Iinclude src/main.c src/transaction.c src/portfolio.c src/bills.c src/tax.c -o finance_manager.exe
+.\finance_manager.exe
+```
+
+### Option 2: Using Make
 
 ```bash
 make
 ./finance_manager
 ```
 
-On Windows (PowerShell):
+Windows:
 
 ```powershell
 make
 .\finance_manager.exe
 ```
 
-### Option 2: Direct GCC command
-
-From the `finance_manager` folder:
-
-```bash
-gcc -Wall -Wextra -Iinclude src/*.c -o finance_manager
-./finance_manager
-```
-
-Windows (PowerShell):
-
-```powershell
-gcc -Wall -Wextra -Iinclude src/*.c -o finance_manager.exe
-.\finance_manager.exe
-```
-
-## Clean Build Artifacts
-
-From `finance_manager`:
+### Clean Build Artifacts
 
 ```bash
 make clean
 ```
 
-## Project Structure
+---
 
-```text
-finance_manager/
-	include/
-		avl.h
-		heap.h
-		segment_tree.h
-		tax.h
-		transaction.h
-		trie.h
-	src/
-		avl.c
-		heap.c
-		main.c
-		segment_tree.c
-		tax.c
-		transaction.c
-		trie.c
-	Makefile
+## Menu Structure
+
+```
+========================================
+   PERSONAL FINANCE & PORTFOLIO MGR
+========================================
+1. Transactions (Add / View / Range Sum)
+2. Portfolio    (Add / View / Top Gainers)
+3. Bills        (Add / View / Pay Next)
+4. Tax          (Calculate / Scenarios)
+0. Exit
 ```
 
-## Main Menu Modules
+---
 
-The application currently supports:
+## Module Details
 
-1. Add Transaction
-2. View Transactions
-3. Expense Range Query
-4. Add Portfolio Holding
-5. View Portfolio
-6. Add Bill
-7. View Next Bill
-8. Pay Next Bill
-9. Create Tax Scenario
-10. Clone Tax Scenario and Add Deduction
-11. List Tax Scenarios
-12. Compare Tax Scenarios
+### `transaction.c` — Trie + Segment Tree
+
+- **Trie**: Stores vendor→category mappings. When you add a transaction for "Amazon", it auto-tags it as "Shopping".  
+  Pre-seeded vendors: `Amazon`, `Zomato`, `Swiggy`, `Uber`, `Netflix`
+- **Segment Tree**: Tracks daily expenses (indexed by day of year, 1–366) and supports range sum queries in O(log N).
+
+### `portfolio.c` — Red-Black Tree + Max Heap
+
+- **Red-Black Tree**: Stores stock holdings sorted by symbol. Uses standard rotations and recoloring to stay balanced, guaranteeing O(log N) insert/search.
+- **Max Heap**: Built dynamically from the RBT to quickly surface the top-performing stock by gain percentage.
+
+### `bills.c` — Min Heap
+
+- Implements a **Priority Queue** where the bill with the earliest due date is always at heap root.
+- Supports: add bill, peek next bill, pay (extract) next bill.
+- Date comparison is done lexicographically on YYYY-MM-DD strings.
+
+### `tax.c` — Dynamic Programming with Memoization
+
+- Calculates tax using **bracketed slabs** (e.g., Indian income tax structure).
+- Results are **memoized** by income level (in 1000-unit buckets) to avoid recomputation.
+- Default slabs seeded at startup:
+
+  | Income Range | Rate |
+  |---|---|
+  | Up to ₹2,50,000 | 0% |
+  | ₹2,50,001 – ₹5,00,000 | 5% |
+  | ₹5,00,001 – ₹10,00,000 | 20% |
+  | Above ₹10,00,000 | 30% |
+
+---
+
+## Sample Run
+
+```
+Choice: 1             ← Transactions
+Choice: 1             ← Add Transaction
+Vendor: Amazon
+Category: (empty)     ← auto-categorized as "Shopping"
+Amount: 500
+Day: 42
+
+Choice: 3             ← Range Sum Query
+Start Day: 1
+End Day: 60
+Total Expense: 500.00
+
+Choice: 2             ← Portfolio
+Choice: 1             ← Add Holding
+Symbol: AAPL
+Buy Price: 150  Current: 160
+→ Gain: 6.67%
+
+Choice: 4             ← Tax
+Choice: 2             ← Calculate
+Income: 600000
+→ Estimated Tax: 32500.00
+```
+
+---
 
 ## Requirements
 
-- C compiler (`gcc` recommended)
-- `make` (optional but recommended)
-- Terminal/PowerShell
+- `gcc` (GCC 9+ recommended)
+- `make` (optional)
+- Terminal or PowerShell
 
-## Project Workflow
+---
 
-1. **Initialize core managers** in `main.c`:
-	 - Trie for vendor/category suggestions
-	 - AVL for portfolio holdings
-	 - Min Heap for bills
-	 - Segment Tree for expense range queries
-	 - Transaction and Tax managers
-2. **Read user choice** from menu (1 to 12).
-3. **Route to module logic** based on selected operation.
-4. **Update corresponding data structure** (insert/query/clone/extract).
-5. **Print result to CLI** and return to menu loop.
-6. **Cleanup memory** before exiting.
+## Suggested Work Split (5 Members)
 
-## File-wise Algorithms / Data Structures
+| Member | Owns |
+|---|---|
+| Member 1 | `transaction.c/.h` — Trie |
+| Member 2 | `transaction.c/.h` — Segment Tree |
+| Member 3 | `portfolio.c/.h` — Red-Black Tree + Max Heap |
+| Member 4 | `bills.c/.h` — Min Heap Priority Queue |
+| Member 5 | `tax.c/.h` — DP Tax |
 
-### `src/main.c`
-- Menu-driven controller logic
-- Input parsing and operation dispatch
-
-### `src/trie.c` + `include/trie.h`
-- **Trie** operations:
-	- vendor insertion
-	- vendor search for auto-category support
-	- memory cleanup (recursive free)
-
-### `src/avl.c` + `include/avl.h`
-- **AVL Tree** algorithms:
-	- height/balance tracking
-	- left/right rotations
-	- balanced insert/update for holdings
-	- in-order traversal for portfolio display
-
-### `src/heap.c` + `include/heap.h`
-- **Min Heap** algorithms:
-	- heapify up/down
-	- insert bill
-	- extract minimum due bill
-	- peek next bill
-
-### `src/segment_tree.c` + `include/segment_tree.h`
-- **Segment Tree** algorithms:
-	- point update for daily expense
-	- range sum query for day intervals
-
-### `src/transaction.c` + `include/transaction.h`
-- Transaction manager logic:
-	- add transaction records
-	- integrate trie category lookup
-	- update segment tree totals
-	- transaction listing
-
-### `src/tax.c` + `include/tax.h`
-- Tax scenario management:
-	- create scenario
-	- add deductions
-	- clone scenario (copy + modify)
-	- compare scenario outputs
-
-## Suggested Work Split for 5 Members
-
-Use this as a direct team allocation plan:
-
-### Member 1 — Core CLI & Integration
-- Own `src/main.c`
-- Integrate all modules and final flow testing
-- Handle input validation and menu improvements
-
-### Member 2 — Transaction + Trie Module
-- Own `src/transaction.c`, `src/trie.c`, `include/transaction.h`, `include/trie.h`
-- Improve vendor/category intelligence and transaction UX
-
-### Member 3 — Portfolio (AVL) Module
-- Own `src/avl.c`, `include/avl.h`
-- Add/update portfolio operations and valuation correctness tests
-
-### Member 4 — Bills + Expense Queries
-- Own `src/heap.c`, `src/segment_tree.c`, `include/heap.h`, `include/segment_tree.h`
-- Validate due-date priority and expense range-query correctness
-
-### Member 5 — Tax + Build/Docs/QA
-- Own `src/tax.c`, `include/tax.h`, `Makefile`, `README.md`
-- Maintain build reliability, documentation quality, and final test checklist
-
-### Team Delivery Workflow (Recommended)
-- Each member works in a feature branch.
-- Merge module-level PRs after peer review.
-- Run `make` and a full menu smoke test before final merge.
+> Each member works in a feature branch. Merge after peer review. Run a full menu smoke test before the final merge.
