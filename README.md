@@ -1,12 +1,12 @@
 # Personal Finance & Portfolio Manager
 
-A modular CLI-based Personal Finance & Investment Portfolio Manager written in pure **C (C99)**, built entirely with custom-implemented data structures — no external libraries beyond `stdio.h`, `stdlib.h`, and `string.h`.
+A modular Personal Finance & Investment Portfolio Manager with a **C (C99)** CLI backend and a Web-based frontend. The logic is built entirely with custom-implemented data structures.
 
 ---
 
 ## Overview
 
-This is a menu-driven terminal application that helps you manage personal finances, track investments, schedule bills, and plan taxes — all powered by core data structures implemented from scratch.
+This application helps you manage personal finances, track investments, schedule bills, and plan taxes. It provides both a menu-driven terminal interface powered by core data structures implemented from scratch, as well as a modern Web frontend.
 
 ---
 
@@ -40,6 +40,15 @@ ADS-CP/
         ├── portfolio.c     ← RBT + Heap implementation
         ├── bills.c         ← Min Heap implementation
         └── tax.c           ← DP with memoization
+└── frontend/
+    ├── index.html          ← Entry point for the web UI
+    ├── styles.css          ← UI styling
+    ├── app.js              ← Main frontend logic
+    └── modules/            ← JS modules mapping to backend features
+        ├── bills.js
+        ├── portfolio.js
+        ├── tax.js
+        └── transaction.js
 ```
 
 ---
@@ -81,6 +90,17 @@ make
 ```bash
 make clean
 ```
+
+### Running the Frontend
+
+To view the web-based frontend, you can use any local web server to serve the `frontend/` directory. If you have Python installed, you can run:
+
+```powershell
+cd frontend
+python -m http.server 5176
+```
+
+Then visit `http://localhost:5176` in your browser.
 
 ---
 
